@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal — Course Registration</title>
+<style>
+/* ───────── RESET & BASE ───────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a1a;
+  --surface:#12122a;
+  --surface2:#1a1a3e;
+  --accent:#7b5ea7;
+  --accent2:#a78bfa;
+  --neon:#00d4ff;
+  --neon2:#ff6ec7;
+  --neon3:#7c3aed;
+  --gold:#ffd700;
+  --text:#e2e2f0;
+  --muted:#8888aa;
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ───────── PARTICLES BACKGROUND ───────── */
+.particles{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  overflow:hidden;
+}
+.particle{
+  position:absolute;
+  width:3px;height:3px;
+  background:var(--accent2);
+  border-radius:50%;
+  opacity:.3;
+  animation:float linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:.4}
+  90%{opacity:.4}
+  100%{transform:translateY(-10vh) scale(1);opacity:0}
+}
+
+/* ───────── CONFETTI ───────── */
+.confetti-container{
+  position:fixed;inset:0;pointer-events:none;z-index:999;
+  overflow:hidden;
+}
+.confetti-piece{
+  position:absolute;
+  width:10px;height:10px;
+  top:-20px;
+  animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  80%{opacity:1}
+  100%{transform:translateY(105vh) rotate(720deg) scale(0.5);opacity:0}
+}
+
+/* ───────── SECTION COMMON ───────── */
+section{
+  position:relative;z-index:1;
+  max-width:720px;
+  margin:0 auto;
+  padding:80px 20px 60px;
+}
+section+section{border-top:1px solid rgba(123,94,167,.15)}
+
+/* ───────── HERO ───────── */
+.hero{
+  text-align:center;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:24px;
+  background:#000;
+}
+.hero-unlock-zone{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+  animation:fadeUp .6s ease-out;
+}
+.hero-unlock-zone.show{display:flex}
+.hero-badge{
+  font-size:.85rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);
+}
+.hero h1{
+  font-size:clamp(2.2rem,6vw,4rem);
+  font-weight:800;
+  background:linear-gradient(135deg,var(--neon),var(--accent2),var(--neon2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:glow-text 3s ease-in-out infinite alternate;
+}
+@keyframes glow-text{
+  0%{filter:drop-shadow(0 0 8px rgba(0,212,255,.4))}
+  100%{filter:drop-shadow(0 0 24px rgba(255,110,199,.6))}
+}
+.hero .date{
+  font-size:clamp(1rem,3vw,1.4rem);
+  color:var(--neon);
+  font-weight:600;
+  letter-spacing:2px;
+  text-shadow:0 0 20px rgba(0,212,255,.5);
+}
+.hero .subtitle{
+  font-size:1rem;color:var(--muted);max-width:400px;
+}
+.hero .countdown{
+  display:flex;align-items:center;gap:8px;
+  margin-top:4px;
+}
+.cd-unit{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--surface);
+  border:1px solid rgba(123,94,167,.25);
+  border-radius:12px;
+  padding:10px 16px;
+  min-width:60px;
+}
+.cd-num{
+  font-size:clamp(1.3rem,3vw,2rem);
+  font-weight:800;
+  color:var(--neon);
+  text-shadow:0 0 12px rgba(0,212,255,.4);
+  font-variant-numeric:tabular-nums;
+}
+.cd-label{
+  font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);margin-top:2px;
+}
+.cd-sep{
+  font-size:1.4rem;color:var(--accent2);font-weight:700;
+  animation:blink 1s step-end infinite;
+}
+@keyframes blink{50%{opacity:.2}}
+.hero .date-arrived{
+  color:var(--gold);font-weight:800;font-size:clamp(1.1rem,3vw,1.5rem);
+  text-shadow:0 0 20px rgba(255,215,0,.5);
+  animation:glow-text 2s ease-in-out infinite alternate;
+}
+.hero .scroll-hint{
+  margin-top:32px;
+  animation:bounce 2s infinite;
+  font-size:1.6rem;
+  opacity:.5;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(10px)}
+}
+
+/* ───────── GAME CARD ───────── */
+.game-card{
+  background:var(--surface);
+  border:1px solid rgba(123,94,167,.2);
+  border-radius:20px;
+  padding:40px 30px;
+  text-align:center;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+}
+.game-card h2{
+  font-size:clamp(1.3rem,3.5vw,1.8rem);
+  margin-bottom:8px;
+  color:var(--accent2);
+}
+.game-card .game-desc{
+  color:var(--muted);font-size:.9rem;margin-bottom:28px;
+}
+
+/* ───────── BUTTONS ───────── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;
+  border:none;border-radius:14px;
+  font-size:1rem;font-weight:600;
+  cursor:pointer;
+  transition:all .25s ease;
+  font-family:var(--font);
+  position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(.96)}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--neon3),var(--accent));
+  color:#fff;
+  box-shadow:0 4px 20px rgba(124,58,237,.4);
+}
+.btn-primary:hover{
+  box-shadow:0 4px 30px rgba(124,58,237,.6);
+  transform:translateY(-2px);
+}
+
+.btn-neon{
+  background:transparent;
+  border:2px solid var(--neon);
+  color:var(--neon);
+  box-shadow:0 0 15px rgba(0,212,255,.15);
+}
+.btn-neon:hover{
+  background:rgba(0,212,255,.1);
+  box-shadow:0 0 25px rgba(0,212,255,.3);
+}
+
+.btn-pink{
+  background:transparent;
+  border:2px solid var(--neon2);
+  color:var(--neon2);
+  box-shadow:0 0 15px rgba(255,110,199,.15);
+}
+.btn-pink:hover{
+  background:rgba(255,110,199,.1);
+  box-shadow:0 0 25px rgba(255,110,199,.3);
+}
+
+.btn-gold{
+  background:linear-gradient(135deg,#b8860b,var(--gold));
+  color:#1a1a2e;
+  box-shadow:0 4px 20px rgba(255,215,0,.3);
+}
+.btn-gold:hover{
+  box-shadow:0 4px 30px rgba(255,215,0,.5);
+  transform:translateY(-2px);
+}
+
+.btn-group{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ───────── MUSIC TOGGLE ───────── */
+.music-btn{
+  position:fixed;
+  bottom:24px;right:24px;
+  z-index:100;
+  width:52px;height:52px;
+  border-radius:50%;
+  border:2px solid var(--accent2);
+  background:var(--surface);
+  color:var(--accent2);
+  font-size:1.3rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(123,94,167,.4);
+  transition:all .3s ease;
+}
+.music-btn:hover{
+  background:var(--accent2);
+  color:#fff;
+  box-shadow:0 4px 30px rgba(167,139,250,.6);
+  transform:scale(1.1);
+}
+.music-btn.playing{
+  animation:music-pulse 1.5s ease-in-out infinite;
+  background:rgba(167,139,250,.15);
+}
+@keyframes music-pulse{
+  0%,100%{box-shadow:0 4px 20px rgba(123,94,167,.4)}
+  50%{box-shadow:0 4px 30px rgba(167,139,250,.7)}
+}
+
+/* ───────── ROULETTE ───────── */
+.roulette-display{
+  min-height:80px;
+  display:flex;align-items:center;justify-content:center;
+  margin:24px 0;
+  font-size:1.2rem;
+  color:var(--accent2);
+  font-weight:600;
+}
+.roulette-display.spinning .roulette-text{
+  animation:shuffle .12s steps(2) infinite;
+}
+@keyframes shuffle{
+  0%{opacity:1;transform:translateY(0)}
+  50%{opacity:.3;transform:translateY(-4px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.roulette-display.revealed .roulette-text{
+  animation:reveal .5s ease-out;
+}
+@keyframes reveal{
+  0%{opacity:0;transform:scale(.7) rotateX(20deg)}
+  60%{transform:scale(1.05) rotateX(-3deg)}
+  100%{opacity:1;transform:scale(1) rotateX(0)}
+}
+.roulette-emoji{
+  font-size:2.4rem;display:block;margin-bottom:8px;
+}
+
+/* ───────── TRUTH OR DARE ───────── */
+.tod-result{
+  min-height:100px;
+  display:flex;align-items:center;justify-content:center;
+  margin:24px 0;
+  padding:20px;
+  border-radius:14px;
+  background:var(--surface2);
+  font-size:1.1rem;
+  line-height:1.7;
+  color:var(--text);
+  transition:all .3s;
+}
+.tod-result.empty{color:var(--muted);font-style:italic;font-size:.95rem}
+.tod-result.show{animation:popIn .4s ease-out}
+@keyframes popIn{
+  0%{opacity:0;transform:scale(.85)}
+  60%{transform:scale(1.03)}
+  100%{opacity:1;transform:scale(1)}
+}
+.tod-tag{
+  display:inline-block;
+  padding:3px 10px;border-radius:8px;
+  font-size:.75rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.tod-tag.truth{background:rgba(0,212,255,.15);color:var(--neon)}
+.tod-tag.dare{background:rgba(255,110,199,.15);color:var(--neon2)}
+
+/* ───────── VAULT ───────── */
+.vault-input-wrap{
+  display:flex;gap:10px;justify-content:center;
+  margin:24px 0;
+  flex-wrap:wrap;
+}
+.vault-input{
+  width:200px;
+  padding:14px 18px;
+  border:2px solid rgba(123,94,167,.3);
+  border-radius:12px;
+  background:var(--surface2);
+  color:var(--text);
+  font-size:1.2rem;
+  letter-spacing:6px;
+  text-align:center;
+  font-family:monospace;
+  outline:none;
+  transition:border-color .2s;
+}
+.vault-input:focus{border-color:var(--accent2)}
+.vault-input::placeholder{color:var(--muted);letter-spacing:3px;font-size:1rem}
+
+.vault-input.shake{
+  animation:shake .5s ease-in-out;
+  border-color:#ff4444;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  10%,30%,50%,70%,90%{transform:translateX(-6px)}
+  20%,40%,60%,80%{transform:translateX(6px)}
+}
+
+.vault-message{
+  margin-top:20px;
+  padding:24px;
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(0,212,255,.08));
+  border:1px solid rgba(167,139,250,.2);
+  text-align:left;
+  line-height:1.8;
+  font-size:.95rem;
+  animation:fadeUp .6s ease-out;
+  display:none;
+}
+.vault-message.show{display:block}
+@keyframes fadeUp{
+  0%{opacity:0;transform:translateY(16px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.vault-message h3{
+  color:var(--gold);font-size:1.1rem;
+  margin-bottom:12px;text-align:center;
+}
+.vault-message p{margin-bottom:12px;color:var(--text)}
+.vault-message .sign{
+  text-align:right;color:var(--accent2);
+  font-style:italic;margin-top:16px;
+}
+
+.vault-feedback{
+  min-height:28px;
+  font-size:.9rem;
+  margin-bottom:4px;
+}
+.vault-feedback.error{color:#ff6b6b}
+.vault-feedback.success{color:#51cf66}
+
+/* ───────── WISH LIST ───────── */
+.wish-input-wrap{
+  display:flex;gap:10px;
+  margin-bottom:20px;
+}
+.wish-input{
+  flex:1;
+  padding:12px 16px;
+  border:2px solid rgba(123,94,167,.3);
+  border-radius:12px;
+  background:var(--surface2);
+  color:var(--text);
+  font-size:.95rem;
+  font-family:var(--font);
+  outline:none;
+  transition:border-color .2s;
+}
+.wish-input:focus{border-color:var(--accent2)}
+.wish-input::placeholder{color:var(--muted)}
+
+.wish-list{
+  list-style:none;
+  display:flex;flex-direction:column;gap:8px;
+}
+.wish-item{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;
+  border-radius:12px;
+  background:var(--surface2);
+  font-size:.9rem;
+  animation:popIn .3s ease-out;
+}
+.wish-item .wish-check{
+  width:22px;height:22px;
+  border-radius:6px;
+  border:2px solid var(--accent2);
+  background:transparent;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;
+  transition:all .2s;
+  flex-shrink:0;
+  color:transparent;
+}
+.wish-item .wish-check:hover{border-color:var(--neon2)}
+.wish-item.done .wish-check{
+  background:var(--accent2);
+  border-color:var(--accent2);
+  color:#fff;
+}
+.wish-item.done .wish-text{
+  text-decoration:line-through;
+  opacity:.5;
+}
+.wish-item .wish-delete{
+  margin-left:auto;
+  background:none;border:none;
+  color:var(--muted);cursor:pointer;
+  font-size:1rem;
+  opacity:.4;
+  transition:opacity .2s;
+}
+.wish-item .wish-delete:hover{opacity:1;color:#ff6b6b}
+.wish-empty{
+  color:var(--muted);
+  font-style:italic;
+  font-size:.9rem;
+  padding:16px 0;
+}
+
+/* ───────── FOOTER ───────── */
+footer{
+  position:relative;z-index:1;
+  text-align:center;
+  padding:40px 20px;
+  color:var(--muted);
+  font-size:.8rem;
+}
+footer .heart{color:var(--neon2);animation:heartbeat 1.2s infinite}
+@keyframes heartbeat{
+  0%,100%{transform:scale(1)}
+  14%{transform:scale(1.2)}
+  28%{transform:scale(1)}
+  42%{transform:scale(1.15)}
+  56%{transform:scale(1)}
+}
+
+/* ───────── RESPONSIVE ───────── */
+@media(max-width:480px){
+  section{padding:60px 16px 40px}
+  .game-card{padding:28px 18px}
+  .btn{padding:12px 24px;font-size:.9rem}
+  .vault-input{width:160px;font-size:1rem;letter-spacing:4px}
+  .hero .countdown{gap:4px}
+  .cd-unit{padding:8px 10px;min-width:48px}
+  .cd-num{font-size:1.1rem}
+  .cd-label{font-size:.5rem}
+  .cd-sep{font-size:1rem}
+  .music-btn{width:44px;height:44px;font-size:1.1rem;bottom:16px;right:16px}
+  .wish-input-wrap{flex-direction:column}
+}
+
+/* ───────── UTILITY ───────── */
+.hidden{display:none!important}
+.fade-in{animation:fadeUp .5s ease-out}
+</style>
+</head>
+<body>
+
+<!-- Music Toggle -->
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Toggle music">🔇</button>
+
+<!-- Confetti container -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- Particles (hidden until unlock) -->
+<div class="particles" id="particles" style="display:none"></div>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div id="vaultHero">
+    <h1 style="font-size:clamp(1rem,2.5vw,1.3rem);font-weight:400;color:var(--muted);-webkit-text-fill-color:var(--muted);background:none;animation:none;filter:none">Enter access code to continue</h1>
+    <div class="vault-input-wrap" style="margin:16px 0">
+      <input
+        type="password"
+        class="vault-input"
+        id="heroVaultInput"
+        placeholder="____"
+        maxlength="4"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter')heroUnlock()"
+      />
+      <button class="btn btn-gold" onclick="sfx.click();heroUnlock()">🔑</button>
+    </div>
+    <div class="vault-feedback" id="heroVaultFeedback"></div>
+  </div>
+  <div class="hero-unlock-zone" id="heroUnlockZone">
+    <div class="hero-badge">✦ You have been invited to celebrate ✦</div>
+    <h1>Happy Birthday, Aqief!</h1>
+    <div class="date">📅 September 16</div>
+    <div class="countdown" id="countdown">
+      <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-label">Days</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cdHours">--</span><span class="cd-label">Hours</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cdMins">--</span><span class="cd-label">Mins</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cdSecs">--</span><span class="cd-label">Secs</span></div>
+    </div>
+    <p class="subtitle">A few games to celebrate YOU. Are you ready?</p>
+    <div class="scroll-hint">⌄</div>
+  </div>
+</section>
+
+<!-- ══════════ CONTENT (hidden until vault unlock) ══════════ -->
+<div id="lockedContent" style="display:none">
+
+<!-- ══════════ GAME 1 — BIRTHDAY ACTIVITY ROULETTE ══════════ -->
+<section>
+  <div class="game-card">
+    <h2>🎰 Birthday Activity Roulette</h2>
+    <p class="game-desc">Can't decide how to celebrate? Let fate choose for you.</p>
+    <div class="roulette-display" id="rouletteDisplay">
+      <div class="roulette-text" id="rouletteText">Spin the wheel to begin ✨</div>
+    </div>      <button class="btn btn-primary" id="rouletteBtn" onclick="sfx.click();spinRoulette()">
+      🎲 Spin the Wheel
+    </button>
+  </div>
+</section>
+
+<!-- ══════════ GAME 2 — TRUTH OR DARE ══════════ -->
+<section>
+  <div class="game-card">
+    <h2>😏 Truth or Dare</h2>
+    <p class="game-desc">Pick your fate. No backing out.</p>
+    <div class="tod-result empty" id="todResult">
+      Choose truth or dare to reveal your prompt…
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-neon" onclick="sfx.click();pickTOD('truth')">💙 Truth</button>
+      <button class="btn btn-pink" onclick="sfx.click();pickTOD('dare')">💗 Dare</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ GAME 3 — THE SECRET VAULT ══════════ -->
+<section>
+  <div class="game-card">
+    <h2>🔐 The Secret Vault</h2>
+    <p class="game-desc">Enter the secret code to unlock something special…</p>
+    <div class="vault-input-wrap">
+      <input
+        type="password"
+        class="vault-input"
+        id="vaultInput"
+        placeholder="____"
+        maxlength="4"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter')unlockVault()"
+      />
+      <button class="btn btn-gold" onclick="sfx.click();unlockVault()">🔑 Unlock</button>
+    </div>
+    <div class="vault-feedback" id="vaultFeedback"></div>
+    <div class="vault-message" id="vaultMessage">
+      <h3>🎂 A Birthday Letter For You</h3>
+      <p>Heyyo,</p>
+      <p>
+        Happy Birthday to my absolute favorite person in the whole wide world!
+      </p>
+      <p>
+        Thank you so much for being such an amazing boyfriend.
+        Qief always make my days brighter, even when things get super stressful.
+        Qief literally my safe space, and my favorite human being.
+      </p>
+      <p>
+        I hope this little website and games bring a big smile to your face. Enjoy your gifts!
+      </p>
+      <p>
+        Selamat Hari Jadi sekali lagi, hubby. I love you so, so much!
+      </p>
+      <p class="sign">— Reenie 💜</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ WISH LIST ══════════ -->
+<section>
+  <div class="game-card">
+    <h2>📝 Birthday Wish List</h2>
+    <p class="game-desc">Type a wish, hit enter. Check them off as they come true.</p>
+    <div class="wish-input-wrap">
+      <input
+        type="text"
+        class="wish-input"
+        id="wishInput"
+        placeholder="I wish for…"
+        maxlength="100"
+        onkeydown="if(event.key==='Enter')addWish()"
+      />
+      <button class="btn btn-neon" onclick="sfx.click();addWish()">Add ✨</button>
+    </div>
+    <ul class="wish-list" id="wishList"></ul>
+    <p class="wish-empty" id="wishEmpty">No wishes yet — start typing!</p>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  Made with <span class="heart">♥</span> for your birthday &nbsp;•&nbsp; Sep 16 🎂
+</footer>
+</div><!-- /lockedContent -->
+
+<script>
+/* ═══════════════════════════════════════
+   HAPPY BIRTHDAY — Web Audio API Melody
+   ═══════════════════════════════════════ */
+let musicPlaying=false;
+let musicCtx=null;
+let musicTimeouts=[];
+
+const BIRTHDAY_NOTES=[
+  // "Happy birthday to you"
+  {f:262,d:.35},{f:262,d:.15},{f:294,d:.5},{f:262,d:.5},{f:349,d:.5},{f:330,d:1},
+  // "Happy birthday to you"
+  {f:262,d:.35},{f:262,d:.15},{f:294,d:.5},{f:262,d:.5},{f:392,d:.5},{f:349,d:1},
+  // "Happy birthday dear [name]"
+  {f:262,d:.35},{f:262,d:.15},{f:523,d:.5},{f:440,d:.5},{f:349,d:.5},{f:330,d:.5},{f:294,d:1},
+  // "Happy birthday to you"
+  {f:466,d:.35},{f:466,d:.15},{f:440,d:.5},{f:349,d:.5},{f:392,d:.5},{f:349,d:1}
+];
+
+function playHappyBirthday(){
+  if(musicPlaying){stopMusic();return}
+  musicCtx=new(window.AudioContext||window.webkitAudioContext)();
+  musicPlaying=true;
+
+  const btn=document.getElementById('musicBtn');
+  btn.textContent='🎵';
+  btn.classList.add('playing');
+
+  let time=musicCtx.currentTime+.1;
+  BIRTHDAY_NOTES.forEach(n=>{
+    const osc=musicCtx.createOscillator();
+    const gain=musicCtx.createGain();
+    osc.type='sine';
+    osc.frequency.value=n.f;
+    gain.gain.setValueAtTime(0,time);
+    gain.gain.linearRampToValueAtTime(.18,time+.02);
+    gain.gain.setValueAtTime(.18,time+n.d-.05);
+    gain.gain.linearRampToValueAtTime(0,time+n.d);
+    osc.connect(gain);
+    gain.connect(musicCtx.destination);
+    osc.start(time);
+    osc.stop(time+n.d);
+    time+=n.d+.02;
+  });
+
+  // Loop after melody finishes
+  const totalDuration=BIRTHDAY_NOTES.reduce((s,n)=>s+n.d+.02,0);
+  const tid=setTimeout(()=>{
+    if(musicPlaying)playHappyBirthday();
+  },totalDuration*1000+500);
+  musicTimeouts.push(tid);
+}
+
+function stopMusic(){
+  musicPlaying=false;
+  musicTimeouts.forEach(clearTimeout);
+  musicTimeouts=[];
+  if(musicCtx){musicCtx.close();musicCtx=null}
+  const btn=document.getElementById('musicBtn');
+  btn.textContent='🔇';
+  btn.classList.remove('playing');
+}
+
+function toggleMusic(){
+  if(musicPlaying)stopMusic();
+  else playHappyBirthday();
+}
+
+/* ───────── SOUND EFFECTS ───────── */
+const sfx=(function(){
+  let ctx=null;
+  function getCtx(){
+    if(!ctx||ctx.state==='closed')ctx=new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume();
+    return ctx;
+  }
+  function tone(freq,dur,type,vol,dest){
+    const c=getCtx();
+    const o=c.createOscillator();
+    const g=c.createGain();
+    o.type=type||'sine';
+    o.frequency.value=freq;
+    g.gain.setValueAtTime(vol||.15,c.currentTime);
+    g.gain.linearRampToValueAtTime(0,c.currentTime+dur);
+    o.connect(g);g.connect(dest||c.destination);
+    o.start();o.stop(c.currentTime+dur);
+  }
+  return{
+    click:function(){tone(880,.08,'sine',.12)},
+    reveal:function(){
+      const c=getCtx();
+      [523,659,784].forEach((f,i)=>{
+        setTimeout(()=>tone(f,.2,'sine',.13),i*100);
+      });
+    },
+    success:function(){
+      const c=getCtx();
+      [523,587,659,784,1047].forEach((f,i)=>{
+        setTimeout(()=>tone(f,.25,'sine',.15),i*120);
+      });
+    },
+    error:function(){tone(180,.3,'sawtooth',.1)},
+    birthday:function(){
+      const c=getCtx();
+      [523,659,784,1047,784,1047].forEach((f,i)=>{
+        setTimeout(()=>tone(f,.3,'sine',.14),i*150);
+      });
+    }
+  };
+})();
+
+/* ───────── PARTICLES ───────── */
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<40;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(6+Math.random()*8)+'s';
+    p.style.animationDelay=Math.random()*8+'s';
+    p.style.width=p.style.height=(2+Math.random()*3)+'px';
+    const colors=['#7b5ea7','#a78bfa','#00d4ff','#ff6ec7','#7c3aed'];
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.appendChild(p);
+  }
+})();
+
+/* ───────── CONFETTI ───────── */
+function fireConfetti(){
+  const container=document.getElementById('confettiContainer');
+  const colors=['#ff6ec7','#00d4ff','#ffd700','#7c3aed','#a78bfa','#ff4444','#44ff44','#ff8800'];
+  const shapes=['square','circle'];
+  for(let i=0;i<80;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    const shape=shapes[Math.floor(Math.random()*shapes.length)];
+    const size=6+Math.random()*10;
+    piece.style.width=size+'px';
+    piece.style.height=size+'px';
+    piece.style.left=Math.random()*100+'%';
+    piece.style.background=color;
+    piece.style.borderRadius=shape==='circle'?'50%':'2px';
+    piece.style.animationDuration=(2+Math.random()*3)+'s';
+    piece.style.animationDelay=Math.random()*1.5+'s';
+    piece.style.opacity=.7+Math.random()*.3;
+    container.appendChild(piece);
+  }
+  setTimeout(()=>{
+    container.innerHTML='';
+  },6000);
+}
+
+/* ───────── BIRTHDAY ACTIVITY ROULETTE ───────── */
+const dateIdeas=[
+  {emoji:'🍕',text:"Order pizza and game all night together"},
+  {emoji:'🎬',text:"Movie marathon — your pick, no complaints allowed"},
+  {emoji:'👨‍🍳',text:"Cook a brand-new recipe together (chaos is encouraged)"},
+  {emoji:'🌙',text:"Late-night drive with your favourite playlist"},
+  {emoji:'🎮',text:"1v1 showdown — winner picks dessert"},
+  {emoji:'🛁',text:"Spa night at home: face masks, snacks, zero responsibilities"},
+  {emoji:'📋',text:"Build a bucket list of places we'll visit together"},
+  {emoji:'🍰',text:"Bake something from scratch and eat half the batter"},
+  {emoji:'🎵',text:"Karaoke night — no skips, no shame"},
+  {emoji:'🗺️',text:"Plan a surprise day trip for next weekend"},
+  {emoji:'🌌',text:"Stargazing with blankets, hot chocolate, and cuddles"},
+  {emoji:'📸',text:"Recreate your favourite photo of us"},
+  {emoji:'🎁',text:"Blind gift exchange — budget: under $10"},
+  {emoji:'🧩',text:"Puzzle night with a great soundtrack"},
+  {emoji:'🏠',text:"Build a pillow fort and watch movies inside it"},
+  {emoji:'🫶',text:"Write each other a letter and read them aloud"},
+  {emoji:'🎨',text:"Paint night — paint each other, masterpiece or disaster"},
+  {emoji:'🕺',text:"Dance in the living room to your favourite songs"},
+  {emoji:'📖',text:"Read to each other — poetry, stories, anything"},
+  {emoji:'⭐',text:"Write down 10 things you love about each other"},
+  {emoji:'🏖️',text:"Beach day (or lake day) with snacks and a speaker"},
+  {emoji:'🏋️',text:"Workout together — then reward yourselves with food"},
+  {emoji:'🛍️',text:"Thrift store challenge: dress each other for under $20"},
+  {emoji:'🍜',text:"Cook your favourite childhood meal for each other"},
+  {emoji:'🗺️',text:"Explore a neighbourhood you've never been to"},
+  {emoji:'☕',text:"Find the cosiest café and spend the afternoon talking"},
+  {emoji:'🎯',text:"Arcade night — go all out on every game"},
+  {emoji:'🧸',text:"Build stuffed animals at a Build-A-Bear (no judgement)"},
+  {emoji:'🌅',text:"Wake up early and watch the sunrise together"},
+  {emoji:'💌',text:"Hide love notes around the house for each other to find"},
+  {emoji:'🎲',text:"Board game night with snacks and side bets"},
+  {emoji:'🧊',text:"Ice cream tour — hit every shop and rate each one"},
+  {emoji:'🪴',text:"Plant something together and watch it grow"},
+  {emoji:'🎥',text:"Make a silly home movie or TikTok together"}
+];
+let rouletteSpinning=false;
+function spinRoulette(){
+  if(rouletteSpinning)return;
+  rouletteSpinning=true;
+  const btn=document.getElementById('rouletteBtn');
+  const display=document.getElementById('rouletteDisplay');
+  const text=document.getElementById('rouletteText');
+  btn.disabled=true;
+  btn.style.opacity='.6';
+  display.className='roulette-display spinning';
+
+  const total=2200;
+  const interval=100;
+  let elapsed=0;
+  const iv=setInterval(()=>{
+    const idea=dateIdeas[Math.floor(Math.random()*dateIdeas.length)];
+    text.innerHTML=idea.emoji+'<br>'+idea.text;
+    elapsed+=interval;
+    if(elapsed>=total){
+      clearInterval(iv);
+      const final=dateIdeas[Math.floor(Math.random()*dateIdeas.length)];
+      display.className='roulette-display revealed';
+      text.innerHTML='<div class="roulette-emoji">'+final.emoji+'</div>'+final.text;
+      sfx.reveal();
+      btn.disabled=false;
+      btn.style.opacity='1';
+      rouletteSpinning=false;
+    }
+  },interval);
+}
+
+/* ───────── TRUTH OR DARE ───────── */
+const truths=[
+  "What's the first thing you noticed about me? 👀",
+  "What's your favourite memory of us together?",
+  "What's the most embarrassing thing you've done to impress me? 😂",
+  "When did you first know you liked me?",
+  "What's a secret you've never told me about our first date?",
+  "What song reminds you of me and why?",
+  "What's the most romantic thing you've ever wanted to do for me?",
+  "If you could relive one moment with me, which would it be?",
+  "What's the silliest thing that made you think of me today?",
+  "What's something I do that makes you smile without me knowing? 😊",
+  "What's one thing you want us to do together that we haven't yet?",
+  "Do you dream about me? What were the last ones about? 💭",
+  "What's a habit of mine that you secretly find adorable?",
+  "If I was a snack, what snack would I be? Be honest. 🍕",
+  "What's the most nervous you've ever been around me?",
+  "What's a compliment you've been saving up to tell me?",
+  "What's the worst lie you've told to get out of plans so we could hang out instead? 🤫",
+  "Which of my selfies is your favourite and why? 📱",
+  "What would your past self say about us?",
+  "What's a small thing I do that means the world to you?",
+  "What's the most 'us' moment we've ever had?",
+  "If we could teleport anywhere right now, where are we going? ✈️",
+  "What's the kindest thing I've ever done for you?",
+  "What's a song that reminds you of us? Play the chorus for me 🎶",
+  "What's the most fun you've ever had with me?",
+  "What's something about me you'd never change?",
+  "What was going through your mind the first time you held my hand?",
+  "Tell me a secret about what you think when I laugh 😄"
+];
+const dares=[
+  "Send me a selfie with the silliest face you can make 🤪",
+  "Text me a voice note singing 'you are my sunshine' 🎤",
+  "Stand up right now and do a 10-second happy dance 💃",
+  "Write 'I love [my name]' on your hand and keep it all day ✍️",
+  "Record a video telling me why I'm the best and send it 📹",
+  "Hug yourself tightly and whisper 'this is from [my name]' 🤗",
+  "Change your phone wallpaper to a photo of us for a week 📱",
+  "Text me your most-used emoji and explain why you love it 😂",
+  "Compliment me 5 times in a row — no repeats, go! 🗣️",
+  "Put a picture of us as your profile pic for 24 hours 📸",
+  "Do 10 jumping jacks while saying 'I love my girlfriend' 🏋️",
+  "Make up a 4-line poem about me right now, out loud 📝",
+  "Screenshot your most recent search and send it to me 🕵️",
+  "Post a story saying '[my name] is the best' with a ❤️ 🌟",
+  "Send me the last photo on your camera roll — no deleting allowed 📷",
+  "Open our chat and scroll to the very first message. Screenshot it! 📱",
+  "Do your best impression of me. I dare you. 🎭",
+  "Send me a 15-second freestyle rap about how much you love me 🎙️",
+  "Call me right now and say 'you're my favourite human' in a funny voice 📞",
+  "Post a captioned photo of us with the cheesiest caption you can think of 💕",
+  "Write a mini review of me like I'm a movie on Rotten Tomatoes 🍅",
+  "Name 5 things you'd grab if you had to flee with me 🏃",
+  "Set your alarm to a song I love and listen to it every morning this week ⏰",
+  "Draw a tiny portrait of me using only emojis and send it 🎨",
+  "Voice message me your best 'couple goal' idea for next month 🗳️",
+  "Dedicate a song to me on any music app and send the screenshot 🎵"
+];
+function pickTOD(type){
+  const arr=type==='truth'?truths:dares;
+  const prompt=arr[Math.floor(Math.random()*arr.length)];
+  const el=document.getElementById('todResult');
+  const tagClass=type==='truth'?'truth':'dare';
+  el.className='tod-result show';
+  el.innerHTML='<div><span class="tod-tag '+tagClass+'">'+type.toUpperCase()+'</span><br>'+prompt+'</div>';
+  sfx.reveal();
+}
+
+/* ───────── COUNTDOWN TIMER ───────── */
+(function(){
+  const dEl=document.getElementById('cdDays');
+  const hEl=document.getElementById('cdHours');
+  const mEl=document.getElementById('cdMins');
+  const sEl=document.getElementById('cdSecs');
+  const countdown=document.getElementById('countdown');
+
+  function getNextBirthday(){
+    const now=new Date();
+    let year=now.getFullYear();
+    let target=new Date(year,8,16,0,0,0);
+    if(now>target){
+      target=new Date(year+1,8,16,0,0,0);
+    }
+    return target;
+  }
+
+  function update(){
+    const now=new Date();
+    const target=getNextBirthday();
+    const diff=target-now;
+
+    if(diff<=0){
+      countdown.innerHTML='<div class="date-arrived">🎉 It\'s your day! Happy Birthday! 🎉</div>';
+      if(!window._bdayConfettiFired){
+        window._bdayConfettiFired=true;
+        fireConfetti();
+        sfx.birthday();
+      }
+      return;
+    }
+
+    const d=Math.floor(diff/(1000*60*60*24));
+    const h=Math.floor((diff/(1000*60*60))%24);
+    const m=Math.floor((diff/(1000*60))%60);
+    const s=Math.floor((diff/1000)%60);
+
+    dEl.textContent=String(d).padStart(2,'0');
+    hEl.textContent=String(h).padStart(2,'0');
+    mEl.textContent=String(m).padStart(2,'0');
+    sEl.textContent=String(s).padStart(2,'0');
+  }
+
+  update();
+  setInterval(update,1000);
+})();
+
+/* ───────── SECRET VAULT ───────── */
+function heroUnlock(){
+  const input=document.getElementById('heroVaultInput');
+  const feedback=document.getElementById('heroVaultFeedback');
+  const val=input.value.trim();
+
+  if(!val){
+    feedback.textContent='Enter a 4-digit code…';
+    feedback.className='vault-feedback error';
+    return;
+  }
+
+  if(val==='0505'){
+    feedback.textContent='';
+    feedback.className='vault-feedback';
+    input.disabled=true;
+    // Reveal everything
+    document.getElementById('vaultHero').style.display='none';
+    document.getElementById('heroUnlockZone').classList.add('show');
+    document.getElementById('lockedContent').style.display='block';
+    document.getElementById('particles').style.display='';
+    fireConfetti();
+    sfx.success();
+    sfx.birthday();
+  }else{
+    feedback.textContent='❌ Incorrect code. Try again…';
+    feedback.className='vault-feedback error';
+    input.classList.add('shake');
+    input.value='';
+    sfx.error();
+    setTimeout(()=>input.classList.remove('shake'),500);
+    input.focus();
+  }
+}
+
+function unlockVault(){
+  // The old vault in the games section — just reveals the letter
+  const input=document.getElementById('vaultInput');
+  const feedback=document.getElementById('vaultFeedback');
+  const message=document.getElementById('vaultMessage');
+  const val=input.value.trim();
+
+  if(!val){
+    feedback.textContent='Enter a 4-digit code…';
+    feedback.className='vault-feedback error';
+    return;
+  }
+
+  if(val==='0505'){
+    feedback.textContent='✨ Access granted!';
+    feedback.className='vault-feedback success';
+    message.className='vault-message show';
+    input.disabled=true;
+    fireConfetti();
+    sfx.success();
+  }else{
+    feedback.textContent='❌ Incorrect code. Try again…';
+    feedback.className='vault-feedback error';
+    input.classList.add('shake');
+    input.value='';
+    sfx.error();
+    setTimeout(()=>input.classList.remove('shake'),500);
+    input.focus();
+  }
+}
+
+/* ───────── WISH LIST ───────── */
+const WISH_KEY='birthday_wishes_v1';
+let wishes=JSON.parse(localStorage.getItem(WISH_KEY)||'[]');
+
+function renderWishes(){
+  const list=document.getElementById('wishList');
+  const empty=document.getElementById('wishEmpty');
+  list.innerHTML='';
+  empty.style.display=wishes.length?'none':'block';
+  wishes.forEach((w,i)=>{
+    const li=document.createElement('li');
+    li.className='wish-item'+(w.done?' done':'');
+    li.innerHTML=
+      '<button class="wish-check" onclick="toggleWish('+i+')">'+(w.done?'✓':'')+'</button>'+
+      '<span class="wish-text">'+escHTML(w.text)+'</span>'+
+      '<button class="wish-delete" onclick="deleteWish('+i+')">✕</button>';
+    list.appendChild(li);
+  });
+}
+
+function addWish(){
+  const input=document.getElementById('wishInput');
+  const text=input.value.trim();
+  if(!text)return;
+  wishes.push({text:text,done:false});
+  saveWishes();
+  renderWishes();
+  input.value='';
+  input.focus();
+}
+
+function toggleWish(i){
+  wishes[i].done=!wishes[i].done;
+  saveWishes();
+  renderWishes();
+}
+
+function deleteWish(i){
+  wishes.splice(i,1);
+  saveWishes();
+  renderWishes();
+}
+
+function saveWishes(){
+  localStorage.setItem(WISH_KEY,JSON.stringify(wishes));
+}
+
+function escHTML(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+renderWishes();
+</script>
+</body>
+</html>
